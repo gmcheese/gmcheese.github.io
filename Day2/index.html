@@ -1,0 +1,41 @@
+<DOCTYPE <!DOCTYPE html>
+    <html>
+
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>D3 Page Template</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../grid/simple-grid.css">
+        <link rel="stylesheet" href="zc-grid.css">
+        <script type="text/javascript" src="../d3.js"></script>
+    </head>
+
+    <body style>
+        <div class="jumbotron">
+            <div class="col-12 center">
+                <h1>Day 2: Fundamentals of Data Visualization</h1>
+            </div>
+        </div>
+        <div class="body-content">
+            <div class="col-6 center">
+                <h2>By Elias Lundgaard Pedersen</h2>
+            </div>
+            <div class="col-6 center">
+
+                <p>
+                    To make the graph, I loaded the .csv and made it ready for plotting:
+                    <script src="https://gist.github.com/gmcheese/eb0b467a10fd0e6bfd7dc4385a9113fd.js?file=Day2.py"></script> 
+                    Then, the jitter and dot plots are combined in one scatterplot. This is done by assigning randomized
+                    values for y in the jitter plot, and constant y for the dot plot:
+                    <script src="https://gist.github.com/gmcheese/eb0b467a10fd0e6bfd7dc4385a9113fd.js?file=jitterdot.py"></script>
+                    <div class="img img-scatter"></div>
+                    Finally, a histogram is created. The bin width is calculated using Scott's rule:
+                    <script src="https://gist.github.com/gmcheese/eb0b467a10fd0e6bfd7dc4385a9113fd.js?file=histogram.py"></script>
+                </p>
+                <div class="img img-histogram"></div>
+            </div>
+        </div>
+    </body>
+
+    </html>
