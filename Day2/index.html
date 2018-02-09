@@ -18,23 +18,184 @@
             </div>
         </div>
         <div class="body-content">
-            <div class="col-6 center">
-                <h2>By Elias Lundgaard Pedersen</h2>
-            </div>
-            <div class="col-6 center">
+            <div class="container">
+                <div class="col-12 center">
+                    <h2>By Elias Lundgaard Pedersen</h2>
+                </div>
 
-                <p>
-                    To make the graph, I loaded the .csv and made it ready for plotting:
-                    <script src="https://gist.github.com/gmcheese/eb0b467a10fd0e6bfd7dc4385a9113fd.js?file=Day2.py"></script> 
-                    Then, the jitter and dot plots are combined in one scatterplot. This is done by assigning randomized
-                    values for y in the jitter plot, and constant y for the dot plot:
-                    <script src="https://gist.github.com/gmcheese/eb0b467a10fd0e6bfd7dc4385a9113fd.js?file=jitterdot.py"></script>
-                    <div class="img img-scatter"></div>
-                    Finally, a histogram is created. The bin width is calculated using Scott's rule:
-                    <script src="https://gist.github.com/gmcheese/eb0b467a10fd0e6bfd7dc4385a9113fd.js?file=histogram.py"></script>
-                </p>
-                <div class="img img-histogram"></div>
+                <div class="row">
+                        To make the graph, I loaded the .csv and made it ready for plotting:
+                        <script src="https://gist.github.com/gmcheese/eb0b467a10fd0e6bfd7dc4385a9113fd.js?file=Day2.js"></script>
+                </div>
+                <div class="row">
+                    Then, the jitter and dot plots are combined in one scatterplot. This is done by assigning randomized values for y in the
+                    jitter plot, and constant y for the dot plot:
+                    <script src="https://gist.github.com/gmcheese/eb0b467a10fd0e6bfd7dc4385a9113fd.js?file=jitterdot.js"></script>
+                    <div id="graph1"></div>
+                    <script>
+                        // Adds the svg canvas
+                        var dataset;
+                        var y = [];
+                        var w = 700;
+                        var h = 500;
+
+                        var chart = d3.select("#graph1")
+                            .append("svg")
+                            .attr("width", w)
+                            .attr("height", h)
+                            .append("g");
+
+
+                        // load data
+                        d3.csv("presidentialdatad3.csv", function (data) {
+                            //convert to numeric
+                            data.forEach(function (d) {
+                                d["months"] = +d["months"];
+                            });
+                            dataset = data;
+                            console.log(dataset);
+
+                            chart.selectAll("circle")
+                                .data(dataset)
+                                .enter()
+                                .append("circle")
+                                .attr("fill", "none")
+                                .attr("stroke", "black")
+                                .attr("cx", function (d) {
+                                    return d.months * 10;
+                                })
+                                .attr("cy", function (d) {
+                                    cy = Math.random() * 100 + (h / 2);
+                                    y.push(cy);
+                                    return cy;
+                                })
+                                .attr("r", function (d) {
+                                    return 5;
+                                });
+                            chart.selectAll("text.dot")
+                                .data(dataset)
+                                .enter()
+                                .append("text")
+                                .text(function (d) {
+                                    return "x";
+                                })
+                                .attr("x", function (d) {
+                                    return d.months * 10;
+                                })
+                                .attr("y", function (d) {
+                                    cy = 100;
+                                    return cy;
+                                })
+
+                            chart.selectAll("text.axis")
+                                .data(dataset)
+                                .enter()
+                                .append("text")
+                                .text(function (d) {
+                                    return d.months;
+                                })
+                                .attr("x", function (d) {
+                                    return d.months * 10;
+                                })
+                                .attr("y", function (d) {
+                                    return h - h / 7;
+                                })
+                                .attr("font-family", "sans-serif")
+                                .attr("font-size", "11px")
+                                .attr("fill", "red");
+                        });
+                    </script> The above figure combines a dot plot (X) and a jitterplot (O). The y-axis denotes months in office.
+                    The jitterplot is obviously a better choice, since it visualizes identical occurences.
+                </div>
+
+                <div class="row">
+                    Finally, a histogram is created.
+                    <script src="https://gist.github.com/gmcheese/eb0b467a10fd0e6bfd7dc4385a9113fd.js?file=histogram.js"></script>
+                    <div id="graph2"></div>
+                    </p>
+                    <script>
+
+                        // Adds the svg canvas
+                        var dataset;
+                        var y = [];
+                        var w = 700;
+                        var h = 500;
+                        var barPadding = 1;
+
+                        var chart2 = d3.select("#graph2")
+                            .append("svg")
+                            .attr("width", w)
+                            .attr("height", h)
+                            .append("g");
+
+
+                        // load data
+                        d3.csv("presidentialcount.csv", function (data) {
+                            //convert to numeric
+                            data.forEach(function (d) {
+                                d["count"] = +d["count"];
+                                d["months"] = +d["months"];
+                            });
+                            dataset = data;
+                            console.log(dataset);
+
+                            chart2.selectAll("rect")
+                                .data(dataset)
+                                .enter()
+                                .append("rect")
+                                .attr("x", function (d, i) {
+                                    return d.months * 10;
+                                })
+                                .attr("y", function (d) {
+                                    return h - (d.count * 20) - 12;
+                                })
+                                .attr("width", w / dataset.length / 2 - barPadding)
+                                .attr("height", function (d) {
+                                    return d.count * 20;
+                                })
+                                .attr("fill", function (d) {
+                                    return "black";
+                                });
+                            chart2.selectAll("text.x")
+                                .data(dataset)
+                                .enter()
+                                .append("text")
+                                .text(function (d) {
+                                    return d.months;
+                                })
+                                .attr("text-anchor", "middle")
+                                .attr("x", function (d, i) {
+                                    return d.months * 10 + (w / dataset.length / 2 - barPadding) / 2;
+                                })
+                                .attr("y", function (d) {
+                                    return h;
+                                })
+                                .attr("font-family", "sans-serif")
+                                .attr("font-size", "11px")
+                                .attr("fill", "red");
+                            chart2.selectAll("text.y")
+                                .data(dataset)
+                                .enter()
+                                .append("text")
+                                .text(function (d) {
+                                    return d.count;
+                                })
+                                .attr("text-anchor", "middle")
+                                .attr("x", function (d, i) {
+                                    return d.months * 10 + (w / dataset.length / 2 - barPadding) / 2;
+                                })
+                                .attr("y", function (d) {
+                                    return h - (d.count) * 20 - 20;
+                                })
+                                .attr("font-family", "sans-serif")
+                                .attr("font-size", "11px")
+                                .attr("fill", "red");
+                        });
+                    </script> The count is calculated using python. The y axis denotes months in office, and the number above each
+                    bar the count of occurences.
+                </div>
             </div>
+        </div>
         </div>
     </body>
 

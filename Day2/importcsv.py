@@ -11,6 +11,7 @@ import csv
 import numpy as np
 import random
 import statistics
+from collections import Counter
 
 data = [[],[]]
 with open('presidentialdata.csv') as csvfile:
@@ -42,3 +43,7 @@ plt.show()
 numBins = int(3.5*statistics.stdev(months)/len(data[1])**(1./3))
 plt.hist(months, bins = numBins ,facecolor = 'none', edgecolor = 'k')
 plt.savefig("histogram.svg")
+
+#counter
+countresult=Counter(months)
+print(countresult)

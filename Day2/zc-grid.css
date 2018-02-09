@@ -3,7 +3,7 @@
   }
   
   body {
-    background: #F38BD3;
+    background: #29323c;
   }
   
   a {
@@ -21,25 +21,25 @@
   }
   
   .container {
-    padding-top: 100px;
+    padding-top: 10px;
   }
   
   .body-content {
     background: #fff;
-    padding: 100px 0 120px 0;
+    padding: 10px 0 12px 0;
     position: relative;
     z-index: 0 !important;
   }
   
   .body-content > .container {
     position: relative;
-    top: 100px;
+    top: 10px;
     padding-bottom: 100px;
   }
   
   .jumbotron {
-    background: #FE7880;
-    background-image: linear-gradient(#F38BD3, #FE7880);
+    background: #29323c;
+    background-image: linear-gradient(#485563, #29323c);
     height: 70px;
     width: 100%;
     z-index: 100 !important;
