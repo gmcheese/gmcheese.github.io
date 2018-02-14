@@ -50,33 +50,43 @@ svg.selectAll("circle")
     .enter()
     .append("circle")
     .attr("cx", function (d) {
-        return w-padding*3.2;
+        return w - padding * 3.2;
     })
-    .attr("cy", function (d,i) {
-        return padding+i*10-5.5+2;
+    .attr("cy", function (d, i) {
+        return padding + i * 10 - 5.5 + 2;
     })
     .attr("r", function (d) {
         return 4;
     })
-    .attr("fill", function(d){return d});
+    .attr("fill", function (d) { return d });
 
+var key = function (d) {
+    return d.key;
+};
+
+var fruitsHarvest;
+var fruitsStorage;
+var vegetablesStorage;
+var vegetablesHarvest;
 // load data
 d3.csv("farmer.csv", rowConverter, function (data) {
+    console.log("loading csv");
+
     dataset = data;
 
     var startDate = d3.min(dataset, function (d) { return d.Month; });
     var endDate = d3.max(dataset, function (d) { return d.Month; });
 
-    var fruitsHarvest = dataset.filter(function (d) {
+    fruitsHarvest = dataset.filter(function (d) {
         return (d.Index == 0)
     })
-    var fruitsStorage = dataset.filter(function (d) {
+    fruitsStorage = dataset.filter(function (d) {
         return (d.Index == 1)
     })
-    var vegetablesStorage = dataset.filter(function (d) {
+    vegetablesStorage = dataset.filter(function (d) {
         return (d.Index == 2)
     })
-    var vegetablesHarvest = dataset.filter(function (d) {
+    vegetablesHarvest = dataset.filter(function (d) {
         return (d.Index == 3)
     })
     //Create scale functions
@@ -90,13 +100,15 @@ d3.csv("farmer.csv", rowConverter, function (data) {
     yScale = d3.scaleLinear()
         .domain([
             0,  //Because I want a zero baseline
-            50
+            d3.max(fruitsHarvest, function (d) {
+                return d.Count;
+            })
         ])
         .range([h - padding, padding]);
 
     //Define rect bandwidth
     var bandwidthScale = d3.scaleBand()
-        .domain(d3.range(dataset.length))
+        .domain(d3.range(fruitsHarvest.length))
         .rangeRound([0, w])
         .paddingInner(0.05);
 
@@ -119,13 +131,13 @@ d3.csv("farmer.csv", rowConverter, function (data) {
 
     //Create Y axis
     svg.append("g")
-        .attr("class", "axis")
+        .attr("class", "y axis")
         .attr("transform", "translate(" + padding + ",0)")
         .call(yAxis);
 
     var heightRect = [];
 
-    svg.selectAll("rect1")
+    svg.selectAll("rect")
         .data(fruitsHarvest)
         .enter()
         .append("rect")
@@ -144,58 +156,94 @@ d3.csv("farmer.csv", rowConverter, function (data) {
         })
         .attr("width", bandwidthScale.bandwidth())
         .attr("fill", "black");
-
-    svg.selectAll("rect2")
-        .data(fruitsStorage)
-        .enter()
-        .append("rect")
-        .attr("x", function (d, i) {
-            return xScale(d.Month);
-        })
-        .attr("y", function (d, i) {
-            return (yScale(d.Count) - heightRect[i]);
-        })
-        .attr("height", function (d, i) {
-            var height = yScale(0) - yScale(d.Count);
-            heightRect[i] += height;
-            return (height);
-        })
-        .attr("width", bandwidthScale.bandwidth())
-        .attr("fill", "red");
-
-    svg.selectAll("rect3")
-        .data(vegetablesStorage)
-        .enter()
-        .append("rect")
-        .attr("x", function (d, i) {
-            return xScale(d.Month);
-        })
-        .attr("y", function (d, i) {
-            return (yScale(d.Count) - heightRect[i]);
-        })
-        .attr("height", function (d, i) {
-            var height = yScale(0) - yScale(d.Count);
-            heightRect[i] += height;
-            return (height);
-        })
-        .attr("width", bandwidthScale.bandwidth())
-        .attr("fill", "yellow");
-
-    svg.selectAll("rect4")
-        .data(vegetablesHarvest)
-        .enter()
-        .append("rect")
-        .attr("x", function (d, i) {
-            return xScale(d.Month);
-        })
-        .attr("y", function (d, i) {
-            return (yScale(d.Count) - heightRect[i]);
-        })
-        .attr("height", function (d, i) {
-            var height = yScale(0) - yScale(d.Count);
-            heightRect[i] += height;
-            return (height);
-        })
-        .attr("width", bandwidthScale.bandwidth())
-        .attr("fill", "blue");
 });
+
+d3.selectAll("p")
+    .on("click", function () {
+        //See which p was clicked
+        var paragraphID = d3.select(this).attr("id");
+        var updataData;
+        var color;
+        //Decide what to do next
+        if (paragraphID == "freshFruits") {
+            updateData = fruitsHarvest;
+            color = colors[0];
+
+        } else if (paragraphID == "storedFruits") {
+            updateData = fruitsStorage;
+            color = colors[1];
+        }
+        else if (paragraphID == "storedVegetables") {
+            updateData = vegetablesStorage;
+            color = colors[2];
+        }
+        else if (paragraphID == "freshVegetables") {
+            updateData = vegetablesHarvest;
+            color = colors[3];
+        }
+        var startDate = d3.min(updateData, function (d) { return d.Month; });
+        var endDate = d3.max(updateData, function (d) { return d.Month; });
+        xScale = d3.scaleTime()
+            .domain([
+                d3.timeDay.offset(startDate, -1),  //startDate minus one day, for padding
+                d3.timeDay.offset(endDate, 1)	  //endDate plus one day, for padding
+            ])
+            .range([padding, w - padding]);
+
+        yScale = d3.scaleLinear()
+            .domain([
+                0,  //Because I want a zero baseline
+                d3.max(updateData, function (d) {
+                    return d.Count;
+                })
+            ])
+            .range([h - padding, padding]);
+
+        //Define rect bandwidth
+        var bandwidthScale = d3.scaleBand()
+            .domain(d3.range(updateData.length))
+            .rangeRound([0, w])
+            .paddingInner(0.05);
+
+        var bars = svg.selectAll("rect")
+            .data(updateData, key);
+        //Define Y axis
+
+        bars.enter()
+            .append("rect")
+            .attr("x", function (d, i) {
+                return xScale(d.Month);
+            })
+            .attr("y", function (d) {
+                return (yScale(0));
+            })
+            .attr("height", 0)
+            //Update
+            .transition()
+            .attr("y", function (d) {
+                return (yScale(d.Count));
+            })
+            .attr("height", function (d) {
+                var height = yScale(0) - yScale(d.Count);
+                return (height);
+            })
+            .attr("width", bandwidthScale.bandwidth())
+            .attr("fill", color);
+
+        bars.exit()
+            .transition()
+            .attr("y", function (d, i) {
+                return (yScale(0));
+            })
+            .attr("height", 0)
+            .remove();
+
+        yAxis = d3.axisLeft()
+            .scale(yScale)
+            .ticks(10);
+        //Create Y axis
+        svg.selectAll("g .y.axis")
+            .transition()
+            .duration(500)
+            .call(yAxis);
+    })
