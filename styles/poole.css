@@ -101,6 +101,7 @@ h4, h5, h6 {
 }
 
 
+
 /* Body text */
 p {
   margin-top: 0;
@@ -213,11 +214,26 @@ blockquote p:last-child {
 }
 
 img {
+  max-width: 100%;
   display: block;
   margin: 0 0 1rem;
   border-radius: 5px;
 }
+.video-container {
+	position:relative;
+	padding-bottom:56.25%;
+	padding-top:30px;
+	height:0;
+	overflow:hidden;
+}
 
+.video-container iframe, .video-container object, .video-container embed {
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+}
 /* Tables */
 table {
   margin-bottom: 1rem;
@@ -275,6 +291,8 @@ tbody tr:nth-child(odd) th {
   padding-right: 1rem;
   margin-left:  auto;
   margin-right: auto;
+  position: relative;
+  clear:both;
 }
 
 
@@ -304,6 +322,13 @@ tbody tr:nth-child(odd) th {
   letter-spacing: 0;
 }
 
+#banner {
+	width: 100%;
+	height: 300px;
+	position: fixed;
+	top: 100px;
+	background: #707070;
+}
 
 /*
  * Posts and pages
